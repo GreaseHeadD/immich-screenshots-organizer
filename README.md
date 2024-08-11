@@ -17,7 +17,7 @@ This script is mostly based on the repository: [immich-folder-album-creator](htt
 ### Bare Python Script
 1. Download the script and its requirements
     ```bash
-    curl https://raw.githubusercontent.com/GreaseHeadD/immich-screenshots-organizer/main/immich_screenshot_organizer.py -o immich_screenshot_organizer.py
+    curl https://raw.githubusercontent.com/GreaseHeadD/immich-screenshots-organizer/main/immich_screenshots_organizer.py -o immich_screenshot_organizer.py
     curl https://raw.githubusercontent.com/GreaseHeadD/immich-screenshots-organizer/main/requirements.txt -o requirements.txt
     ```
 2. Install requirements
