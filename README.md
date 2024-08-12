@@ -60,6 +60,8 @@ python3 ./immich_screenshots_organizer.py screenshotsAlbumName https://immich.my
 ```
 __Note: if specifying a library, import_path is preferred over library_name, because library names aren't unique.__
 
+__Note: the --include-exifless is currently broken.__
+
 ## Choosing the correct `import_path`
 The import path  `/path/to/external/lib/` is the path you have mounted your external library into the Immich container.  
 If you are following [Immich's External library Documentation](https://immich.app/docs/guides/external-library), you are using an environment variable called `${EXTERNAL_PATH}` which is mounted to `/usr/src/app/external` in the Immich container. Your `import_path` to pass to the script is `/usr/src/app/external`.
@@ -71,5 +73,7 @@ The script utilizies [Immich's REST API](https://immich.app/docs/api/) to query 
 ## Improvements
 
 The mechanism for detecting screenshots is very simple and can thus also fail. For example if a picture is stripped of all it's exif data(this can happen with Whatsapp, OneDrive, etc.) it is impossible to accurately detect if a picture is a screenshot with the API that Immich provides. I'm aware that Apple devices will add 'screenshot' as comment under exifComment and XMPComment, but since this is not exposed by the Immich API trying to read this out would add unnecessary complexity.
+
+I've also investigated using smart search to find screenshots, but this was very unreliable as a lot of regular pictures would also show up in the resulting assets so for now I deem that not a good way to find screenshots.
 
 Ways to improve the mechanism would be to make an educated guess based on the dimensions of the images and the size of the file, but with enough compression an actual photo would still pass as a screenshot. For now this is the best it can do.

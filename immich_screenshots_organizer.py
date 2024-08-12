@@ -117,7 +117,7 @@ def fetchServerVersion():
                      version['patch'])
     return version
 
-
+# Unused
 def fetchAssetInfo(id):
     body = {}
     r = requests.get(root_url + 'assets/' + id, json=body, **requests_kwargs)
@@ -144,8 +144,10 @@ def fetchAssetsMinorV106():
     body = {}
     body['isOffline'] = 'false'
     body['type'] = 'IMAGE'
+    body['withExif'] = not include_exifless
     if (library_name is not None or import_path is not None) and library_id is not None:
         body['libraryId'] = library_id
+        logging.debug("library_id: %s", library_id)
     # This API call allows a maximum page size of 1000
     number_of_assets_to_fetch_per_request_search = min(1000, number_of_assets_to_fetch_per_request)
     body['size'] = number_of_assets_to_fetch_per_request_search
@@ -160,7 +162,7 @@ def fetchAssetsMinorV106():
 
     assets = assets + assetsReceived
     # If we got a full chunk size back, let's perfrom subsequent calls until we get less than a full chunk size
-    while len(assetsReceived) == number_of_assets_to_fetch_per_request_search:
+    while len(assetsReceived) == number_of_assets_to_fetch_per_request_search and False:
         page += 1
         body['page'] = page
         r = requests.post(root_url + 'search/metadata', json=body, **requests_kwargs)
@@ -260,9 +262,8 @@ if not len(album_name) > 0:
     exit(1)
 
 for asset in assets:
-    assetInfo = fetchAssetInfo(asset['id'])
-    if "exifInfo" in assetInfo:
-        if "exposureTime" in assetInfo['exifInfo'] and assetInfo['exifInfo']['exposureTime'] is None:
+    if "exifInfo" in asset:
+        if "exposureTime" in asset['exifInfo'] and asset['exifInfo']['exposureTime'] is None:
             album_to_assets[album_name].append(asset['id'])
             if archive_screens:
                 assets_to_archive.append(asset['id'])
