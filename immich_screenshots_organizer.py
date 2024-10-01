@@ -162,7 +162,7 @@ def fetchAssetsMinorV106():
 
     assets = assets + assetsReceived
     # If we got a full chunk size back, let's perfrom subsequent calls until we get less than a full chunk size
-    while len(assetsReceived) == number_of_assets_to_fetch_per_request_search and False:
+    while len(assetsReceived) == number_of_assets_to_fetch_per_request_search:
         page += 1
         body['page'] = page
         r = requests.post(root_url + 'search/metadata', json=body, **requests_kwargs)
