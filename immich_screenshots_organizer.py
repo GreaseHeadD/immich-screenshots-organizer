@@ -111,22 +111,29 @@ def fetchServerVersion():
     # Initialize the version with the latest version without this API call
     version = {'major': 1, 'minor': 105, "patch": 1}
 
-    # 1.118.x and up
-    r = requests.get(root_url + 'server/version', **requests_kwargs)
-    if r.status_code == 200:
-        version = r.json()
-        logging.info("Detected Immich server version %s.%s.%s", version['major'], version['minor'], version['patch'])
-        return version
+    try:
+        # 1.118.x and up
+        r = requests.get(root_url + 'server/version', **requests_kwargs)
+        if r.status_code == 200:
+            version = r.json()
+            logging.info("Detected Immich server version (new API) %s.%s.%s", version['major'], version['minor'], version['patch'])
+            return version
+    except requests.exceptions.RequestException as e:
+        logging.warning("Failed to call new API endpoint: %s", e)
 
-    # 1.106.x - 1.117.x
-    r = requests.get(root_url + 'server-info/version', **requests_kwargs)
-    if r.status_code == 200:
-        version = r.json()
-        logging.info("Detected Immich server version %s.%s.%s", version['major'], version['minor'], version['patch'])
-        return version
+    try:
+        # 1.106.x - 1.117.x
+        r = requests.get(root_url + 'server-info/version', **requests_kwargs)
+        if r.status_code == 200:
+            version = r.json()
+            logging.info("Detected Immich server version (old API) %s.%s.%s", version['major'], version['minor'], version['patch'])
+            return version
+    except requests.exceptions.RequestException as e:
+        logging.warning("Failed to call fallback API endpoint: %s", e)
 
-    logging.info("Detected Immich server version %s.%s.%s or older", version['major'], version['minor'], version['patch'])
+    logging.info("Immich API not found or unsupported (version %s.%s.%s or older)", version['major'], version['minor'], version['patch'])
     return version
+
 
 # Unused
 def fetchAssetInfo(id):
@@ -211,7 +218,6 @@ def fetchAssetsSearchSmart():
         assetsReceived = responseJson['assets']['items']
         logging.debug("Received %s assets with chunk %s", len(assetsReceived), page)
         assets += assetsReceived
-    print(assets)
     return assets
 
 # Fetches assets from the Immich API
@@ -259,9 +265,6 @@ def addAssetsToAlbum(albumId, assets):
         data = {'ids': assets_chunk}
         r = requests.put(root_url + apiEndpoint + f'/{albumId}/assets', json=data, **requests_kwargs)
         if r.status_code not in [200, 201]:
-            print(album)
-            print(r.json())
-            print(data)
             continue
         assert r.status_code in [200, 201]
         response = r.json()
@@ -276,9 +279,15 @@ def addAssetsToAlbum(albumId, assets):
         if cpt > 0:
             logging.info("%d new assets added to %s", cpt, album)
 
+
 # append trailing slash to root URL
 if root_url[-1] != '/':
-    root_url = root_url + '/'
+    if root_url[-3:] != 'api':
+        root_url += '/api/'
+    else:
+        root_url += '/'
+elif root_url[-4:] != 'api/':
+    root_url += 'api/'
 
 serverVersion = fetchServerVersion()
 if serverVersion['major'] == 1 and serverVersion['minor'] <= 105:

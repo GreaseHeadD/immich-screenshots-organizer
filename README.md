@@ -4,7 +4,7 @@ This is a python script designed to automatically organize screenshots into an a
 This is useful for keeping screenshots seperate from pictures and uncluttering the timeline. Currently only 
 screenshots(photos) are supported, screenrecordings(videos) are __not supported__.
 
-__Current compatibility:__ Immich v1.131.x and up
+__Current compatibility:__ Immich v1.134.x and up
 
 ## Disclaimer
 This script is mostly based on the repository: 
@@ -34,7 +34,7 @@ This script is mostly based on the repository:
 
     positional arguments:
       album_name             The album name where the screenshots will reside
-      api_url               The root API URL of immich, e.g. https://immich.mydomain.com/api/
+      api_url               The root API URL of immich, e.g. https://immich.mydomain.com/api/ '/api/' part is optional
       api_key               The Immich API Key to use
 
     options:
@@ -69,7 +69,7 @@ This script is mostly based on the repository:
 
 __Plain example without optional arguments:__
 ```bash
-python3 ./immich_screenshots_organizer.py screenshotsAlbumName https://immich.mydomain.com/api thisIsMyApiKeyCopiedFromImmichWebGui
+python3 ./immich_screenshots_organizer.py screenshotsAlbumName https://immich.mydomain.com thisIsMyApiKeyCopiedFromImmichWebGui
 ```
 __Note: if specifying a library, import_path is preferred over library_name, because library names aren't unique.__
 
